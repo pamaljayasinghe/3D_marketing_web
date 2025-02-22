@@ -10,6 +10,7 @@ import {
   PerspectiveCamera,
 } from "@react-three/drei";
 import "../app/styles/Model.css";
+import Navbar from "./Navbar";
 
 function Model({ url, position, rotation, scale }) {
   const { scene, animations } = useGLTF(url);
@@ -64,6 +65,8 @@ function Model({ url, position, rotation, scale }) {
 export default function Scene() {
   return (
     <main className="scene-container">
+      <Navbar />
+
       <section className="first-section">
         <div className="canvas-wrapper">
           <Canvas
