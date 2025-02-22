@@ -58,23 +58,26 @@ body {
 }
 /* Add these performance optimizations to your existing CSS */
 .canvas-wrapper {
-  will-change: transform;
-  transform: translateZ(0);
+  transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
+  perspective: 1000;
+  will-change: transform;
 }
 
 .model-container canvas {
-  will-change: transform;
-  transform: translateZ(0);
+  transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
+  perspective: 1000;
+  will-change: transform;
 }
 
 @media (max-width: 768px) {
-  .model-container {
-    height: 400px;
+  .canvas-wrapper {
+    height: 50vh;
+    transform: translate3d(0, 0, 0);
   }
 
-  .canvas-wrapper {
+  .model-container {
     height: 60vh;
   }
 }
@@ -581,7 +584,11 @@ body {
   width: 100% !important;
   height: 100% !important;
   position: relative;
-  z-index: 15; /* Ensures 3D model is in front */
+  z-index: 15;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000;
+  will-change: transform; /* Ensures 3D model is in front */
 }
 
 /* Responsive Styles */

@@ -23,10 +23,7 @@ const useWindowSize = () => {
 
   useEffect(() => {
     function handleResize() {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     }
 
     handleResize();
@@ -38,13 +35,15 @@ const useWindowSize = () => {
 };
 
 const Model = memo(function Model({ url, position, rotation, scale }) {
-  const { scene, animations } = useGLTF(url);
+  const { scene, animations } = useGLTF(url, true);
   const { actions, names } = useAnimations(animations, scene);
   const windowSize = useWindowSize();
 
   useEffect(() => {
     if (names.length > 0 && actions[names[0]]) {
-      actions[names[0]].reset().play();
+      const action = actions[names[0]];
+      action.reset().play();
+      return () => action.stop();
     }
   }, [actions, names]);
 
@@ -73,25 +72,28 @@ const Model = memo(function Model({ url, position, rotation, scale }) {
   );
 });
 
-const LoadingFallback = function LoadingFallback() {
-  return (
-    <div
-      style={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        color: "white",
-      }}
-    >
-      Loading...
-    </div>
-  );
-};
-
 const SceneCanvas = memo(function SceneCanvas({ children, ...props }) {
+  const canvasProps = useMemo(
+    () => ({
+      dpr:
+        typeof window !== "undefined"
+          ? Math.min(window.devicePixelRatio, 2)
+          : 1,
+      gl: {
+        antialias: true,
+        alpha: true,
+        preserveDrawingBuffer: true,
+        powerPreference: "high-performance",
+        stencil: false,
+        depth: true,
+      },
+      ...props,
+    }),
+    [props]
+  );
+
   return (
-    <Canvas {...props}>
+    <Canvas {...canvasProps}>
       <Suspense fallback={null}>
         {children}
         <Environment preset="lobby" />
@@ -112,6 +114,7 @@ export default function Scene() {
 
   useEffect(() => {
     setIsMounted(true);
+    return () => setIsMounted(false);
   }, []);
 
   if (!isMounted) return null;
@@ -138,11 +141,7 @@ export default function Scene() {
           </div>
         </div>
         <div className="canvas-wrapper">
-          <SceneCanvas
-            shadows
-            camera={{ position: [0, 0, 5], fov: 45 }}
-            gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
-          >
+          <SceneCanvas shadows camera={{ position: [0, 0, 5], fov: 45 }}>
             <ambientLight intensity={0.8} />
             <pointLight position={[10, 10, 10]} intensity={1} />
             <Model
@@ -160,7 +159,7 @@ export default function Scene() {
             width={250}
             height={250}
             className="overlay-image"
-            priority={false}
+            priority={true}
           />
         </div>
       </section>
@@ -200,11 +199,7 @@ export default function Scene() {
           </div>
 
           <div className="model-container">
-            <SceneCanvas
-              shadows
-              gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
-              dpr={[1, 2]}
-            >
+            <SceneCanvas shadows>
               <PerspectiveCamera
                 makeDefault
                 position={[0, 0, 8]}
