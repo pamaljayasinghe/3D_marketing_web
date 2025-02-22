@@ -168,7 +168,7 @@ export default function ComingSoon() {
             <OrbitControls
               enableZoom={false}
               enablePan={false}
-              enableRotate={true}
+              enableRotate={false}
               maxPolarAngle={Math.PI / 2}
               minPolarAngle={Math.PI / 4}
             />

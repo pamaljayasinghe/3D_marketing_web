@@ -216,7 +216,7 @@ export default function Scene() {
               <OrbitControls
                 enableZoom={false}
                 enablePan={false}
-                enableRotate={true}
+                enableRotate={false}
                 minPolarAngle={Math.PI / 2}
                 maxPolarAngle={Math.PI / 2}
               />
