@@ -49,11 +49,11 @@ function Model({ url, position, rotation, scale }) {
         position[2] + 0.3, // Adjust Z: positive moves away
       ];
     } else if (url.includes("model2.glb")) {
-      finalScale = scale * 0.6; // Reduce scale more for second model
+      finalScale = scale * 1.4; // Scale up Model 2 on mobile
       finalPosition = [
-        position[0], // Keep centered horizontally
-        position[1] + 1, // Move up slightly
-        position[2] - 1, // Bring closer to camera
+        position[0],
+        position[1] - 1.5, // Move down to reveal full model
+        position[2] - 1, // Bring closer
       ];
     }
   }
@@ -174,26 +174,6 @@ export default function Scene() {
             <p>Engage with 3D content like never before.</p>
           </motion.div>
         </div>
-
-        <motion.div
-          className="floating-box top-left"
-          initial={{ opacity: 0, y: -50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          <h3>Premium Quality</h3>
-          <p>Experience the highest quality 3D renderings.</p>
-        </motion.div>
-
-        <motion.div
-          className="floating-box top-right"
-          initial={{ opacity: 0, y: -50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          <h3>Custom Solutions</h3>
-          <p>Tailored 3D experiences for your specific needs.</p>
-        </motion.div>
       </section>
     </main>
   );
