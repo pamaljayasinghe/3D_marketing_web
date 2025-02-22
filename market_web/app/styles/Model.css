@@ -406,7 +406,7 @@ body {
     height: 45px;
   }
 }
-/* ComingSoonSection.css */
+/* ComingSoonSection css */
 .cs-container {
   min-height: 110vh; /* Increased height to ensure full visibility */
   background: linear-gradient(135deg, #f3f4ff 0%, #e5e7ff 100%);
@@ -449,6 +449,7 @@ body {
   font-size: 48px;
   color: #673ab7;
   margin-bottom: 40px;
+  margin-top: 30px;
   font-weight: bold;
   line-height: 1.2;
 }
@@ -606,5 +607,32 @@ body {
 
   .cs-background-text {
     font-size: 40vw;
+  }
+}
+.cs-description {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 20px;
+  text-align: center;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: 500;
+}
+
+.cs-btn-icon {
+  font-size: 20px;
+  margin-right: 8px;
+  color: white;
+  vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+  .cs-timer-section {
+    margin-bottom: 40px; /* Add space between countdown and model */
+  }
+
+  .cs-model-section {
+    margin-top: 20px; /* Additional margin for better spacing */
   }
 }

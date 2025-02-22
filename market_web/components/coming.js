@@ -8,6 +8,7 @@ import {
   useAnimations,
 } from "@react-three/drei";
 import "../app/styles/Model.css";
+import { FaApple, FaGlobe } from "react-icons/fa"; // Import icons
 
 function Model({ url, position, rotation, scale }) {
   const { scene, animations } = useGLTF(url);
@@ -38,8 +39,8 @@ function Model({ url, position, rotation, scale }) {
   let finalPosition = position;
 
   if (windowWidth <= 768) {
-    finalScale = [2, 2, 2]; // Custom scale for mobile
-    finalPosition = [position[0], position[0] - 1.5, position[2] + 0.5]; // Adjusted for mobile
+    finalScale = [1.7, 1.7, 1.7]; // Custom scale for mobile
+    finalPosition = [position[0], position[1] - 0.1, position[2] + 0.5]; // Adjusted for mobile
   }
 
   return (
@@ -61,7 +62,7 @@ export default function ComingSoon() {
   });
 
   useEffect(() => {
-    const targetDate = new Date("2024-12-31").getTime();
+    const targetDate = new Date("2025-03-17").getTime();
 
     const interval = setInterval(() => {
       const now = new Date().getTime();
@@ -92,6 +93,9 @@ export default function ComingSoon() {
       <div className="cs-content-wrapper">
         <div className="cs-timer-section">
           <h1>COMING SOON</h1>
+          <p className="cs-description">
+            Very soon, we will be available on iOS and Web Platform! Stay tuned!
+          </p>
 
           <div className="cs-countdown-wrapper">
             <div className="cs-countdown-item">
@@ -116,8 +120,12 @@ export default function ComingSoon() {
           </div>
 
           <div className="cs-platform-buttons">
-            <button className="cs-platform-btn ios-btn">iOS App</button>
-            <button className="cs-platform-btn web-btn">Web Platform</button>
+            <button className="cs-platform-btn ios-btn">
+              <FaApple className="cs-btn-icon" /> iOS App
+            </button>
+            <button className="cs-platform-btn web-btn">
+              <FaGlobe className="cs-btn-icon" /> Web Platform
+            </button>
           </div>
         </div>
 

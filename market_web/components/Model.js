@@ -12,6 +12,8 @@ import {
 import "../app/styles/Model.css";
 import Navbar from "./Navbar";
 import ComingSoon from "./coming";
+import TeamSection from "./team";
+import Footer from "./footer";
 
 function Model({ url, position, rotation, scale }) {
   const { scene, animations } = useGLTF(url);
@@ -214,6 +216,10 @@ export default function Scene() {
       <section className="coming-soon-section">
         <ComingSoon />
       </section>
+      <section className="team-section">
+        <TeamSection />
+      </section>
+      <Footer />
     </main>
   );
 }
