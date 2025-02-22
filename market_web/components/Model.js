@@ -80,7 +80,7 @@ export default function Scene() {
             reality try-ons.
           </p>
           <div className="hero-buttons">
-            <a href="#about" className="hero-button hero-button-primary">
+            <a href="#team" className="hero-button hero-button-primary">
               About Us
             </a>
             <a href="#contact" className="hero-button hero-button-secondary">
@@ -120,7 +120,7 @@ export default function Scene() {
         />
       </section>
 
-      <section className="second-section">
+      <section className="second-section" id="features">
         <h2 className="section-title">Discover Our Features</h2>
 
         <div

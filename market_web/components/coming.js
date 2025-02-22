@@ -87,7 +87,7 @@ export default function ComingSoon() {
   }, []);
 
   return (
-    <div className="cs-container">
+    <div className="cs-container" id="comingsoon">
       <div className="cs-background-text">2025</div>
 
       <div className="cs-content-wrapper">

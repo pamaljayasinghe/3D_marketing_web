@@ -31,7 +31,7 @@ export default function Navbar() {
           </div>
 
           <div className="nav-right">
-            <a href="#coming-soon" className="nav-link">
+            <a href="#comingsoon" className="nav-link">
               Coming Soon
             </a>
             <a href="#team" className="nav-link">
@@ -71,7 +71,7 @@ export default function Navbar() {
           <a href="#features" className="mobile-link" onClick={toggleMenu}>
             Features
           </a>
-          <a href="#coming-soon" className="mobile-link" onClick={toggleMenu}>
+          <a href="#comingsoon" className="mobile-link" onClick={toggleMenu}>
             Coming Soon
           </a>
           <a href="#team" className="mobile-link" onClick={toggleMenu}>
