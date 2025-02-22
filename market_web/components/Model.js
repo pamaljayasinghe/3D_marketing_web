@@ -36,25 +36,16 @@ function Model({ url, position, rotation, scale }) {
     return () => window.removeEventListener("resize", handleResize);
   }, [url]);
 
-  // Add responsive adjustments for both models
   let finalScale = scale;
   let finalPosition = position;
 
   if (windowWidth <= 768) {
     if (url.includes("model1.glb")) {
       finalScale = scale * 0.8;
-      finalPosition = [
-        position[0] - 0.5, // Adjust X: negative moves left
-        position[1] + 0.2, // Adjust Y: positive moves up
-        position[2] + 0.3, // Adjust Z: positive moves away
-      ];
+      finalPosition = [position[0] - 0.5, position[1] + 0.2, position[2] + 0.3];
     } else if (url.includes("model2.glb")) {
-      finalScale = scale * 1.4; // Scale up Model 2 on mobile
-      finalPosition = [
-        position[0],
-        position[1] - 1.5, // Move down to reveal full model
-        position[2] - 1, // Bring closer
-      ];
+      finalScale = scale * 1.2;
+      finalPosition = [position[0], position[1] - 1.5, position[2] - 1];
     }
   }
 
@@ -79,11 +70,7 @@ export default function Scene() {
             shadows
             camera={{ position: [0, 0, 5], fov: 45 }}
             className="canvas"
-            gl={{
-              antialias: true,
-              alpha: true,
-              preserveDrawingBuffer: true,
-            }}
+            gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
           >
             <ambientLight intensity={0.8} />
             <pointLight position={[10, 10, 10]} intensity={1} />
@@ -112,25 +99,51 @@ export default function Scene() {
       <section className="second-section">
         <h2 className="section-title">Discover Our Features</h2>
 
-        <div className="content-wrapper">
-          <motion.div
-            className="feature-box left"
-            initial={{ opacity: 0, x: -100 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1 }}
+        <div
+          className="content-wrapper columns-layout"
+          style={{
+            gap: window.innerWidth > 768 ? "4rem" : "2rem",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            className="column"
+            style={{
+              gap: window.innerWidth > 768 ? "4rem" : "2rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            <h3>Realistic Animations</h3>
-            <p>Our 3D characters come with smooth and expressive animations.</p>
-          </motion.div>
+            <motion.div
+              className="feature-box top-left"
+              initial={{ opacity: 0, y: -50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+            >
+              <h3>Immersive Environments</h3>
+              <p>Explore highly detailed and interactive 3D worlds.</p>
+            </motion.div>
+            <motion.div
+              className="feature-box left"
+              initial={{ opacity: 0, x: -100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1 }}
+            >
+              <h3>Realistic Animations</h3>
+              <p>
+                Our 3D characters come with smooth and expressive animations.
+              </p>
+            </motion.div>
+          </div>
 
-          <div className="model-container">
+          <div
+            className="model-container"
+            style={{ margin: window.innerWidth > 768 ? "0 4rem" : "0 2rem" }}
+          >
             <Canvas
               shadows
-              gl={{
-                antialias: true,
-                alpha: true,
-                preserveDrawingBuffer: true,
-              }}
+              gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
               dpr={[1, 2]}
             >
               <PerspectiveCamera
@@ -164,15 +177,34 @@ export default function Scene() {
             </Canvas>
           </div>
 
-          <motion.div
-            className="feature-box right"
-            initial={{ opacity: 0, x: 100 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1 }}
+          <div
+            className="column"
+            style={{
+              gap: window.innerWidth > 768 ? "4rem" : "2rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            <h3>Interactive Experiences</h3>
-            <p>Engage with 3D content like never before.</p>
-          </motion.div>
+            <motion.div
+              className="feature-box top-right"
+              initial={{ opacity: 0, y: -50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+            >
+              <h3>Customizable Features</h3>
+              <p>Adjust the experience to suit your needs with ease.</p>
+            </motion.div>
+            <motion.div
+              className="feature-box right"
+              initial={{ opacity: 0, x: 100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1 }}
+            >
+              <h3>Interactive Experiences</h3>
+              <p>Engage with 3D content like never before.</p>
+            </motion.div>
+          </div>
         </div>
       </section>
     </main>
