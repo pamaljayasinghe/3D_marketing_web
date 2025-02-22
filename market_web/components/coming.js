@@ -8,14 +8,24 @@ import {
   useAnimations,
 } from "@react-three/drei";
 import "../app/styles/Model.css";
-import { FaApple, FaGlobe } from "react-icons/fa"; // Import icons
+import { FaApple, FaGlobe } from "react-icons/fa";
 
 function Model({ url, position, rotation, scale }) {
   const { scene, animations } = useGLTF(url);
   const { actions, names } = useAnimations(animations, scene);
-  const [windowWidth, setWindowWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1200
-  );
+  const [windowWidth, setWindowWidth] = useState(1200); // Default value
+
+  useEffect(() => {
+    // Update window width after component mounts
+    setWindowWidth(window.innerWidth);
+
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (names.length > 0) {
@@ -26,21 +36,12 @@ function Model({ url, position, rotation, scale }) {
     }
   }, [actions, names]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   let finalScale = scale;
   let finalPosition = position;
 
   if (windowWidth <= 768) {
-    finalScale = [1.7, 1.7, 1.7]; // Custom scale for mobile
-    finalPosition = [position[0], position[1] - 0.1, position[2] + 0.5]; // Adjusted for mobile
+    finalScale = [1.7, 1.7, 1.7];
+    finalPosition = [position[0], position[1] - 0.1, position[2] + 0.5];
   }
 
   return (
@@ -60,6 +61,11 @@ export default function ComingSoon() {
     minutes: "44",
     seconds: "34",
   });
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     const targetDate = new Date("2025-03-17").getTime();
@@ -85,6 +91,10 @@ export default function ComingSoon() {
 
     return () => clearInterval(interval);
   }, []);
+
+  if (!isMounted) {
+    return null; // Return null on server-side
+  }
 
   return (
     <div className="cs-container" id="comingsoon">
@@ -133,17 +143,26 @@ export default function ComingSoon() {
           <Canvas
             shadows
             camera={{
-              position: [0, 0, window.innerWidth <= 768 ? 6 : 5],
-              fov: window.innerWidth <= 768 ? 50 : 45,
+              position: [
+                0,
+                0,
+                typeof window !== "undefined" && window.innerWidth <= 768
+                  ? 6
+                  : 5,
+              ],
+              fov:
+                typeof window !== "undefined" && window.innerWidth <= 768
+                  ? 50
+                  : 45,
             }}
           >
             <ambientLight intensity={0.8} />
             <pointLight position={[10, 10, 10]} intensity={1} />
             <Model
               url="/models/model3.glb"
-              position={[0, -1.6, 0]} // Default position
+              position={[0, -1.6, 0]}
               rotation={[0, -1.5707963267948966, 0]}
-              scale={[1.5, 1.5, 1.5]} // Default scale
+              scale={[1.5, 1.5, 1.5]}
             />
             <Environment preset="lobby" />
             <OrbitControls

@@ -18,9 +18,19 @@ import Footer from "./footer";
 function Model({ url, position, rotation, scale }) {
   const { scene, animations } = useGLTF(url);
   const { actions, names } = useAnimations(animations, scene);
-  const [windowWidth, setWindowWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1200
-  );
+  const [windowWidth, setWindowWidth] = useState(1200); // Default value
+
+  useEffect(() => {
+    // Update window width after component mounts
+    setWindowWidth(window.innerWidth);
+
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (names.length > 0) {
@@ -30,15 +40,6 @@ function Model({ url, position, rotation, scale }) {
       }
     }
   }, [actions, names]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [url]);
 
   let finalScale = scale;
   let finalPosition = position;
@@ -66,6 +67,16 @@ function Model({ url, position, rotation, scale }) {
 }
 
 export default function Scene() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null; // Return null on server-side
+  }
+
   return (
     <main className="scene-container">
       <Navbar />
@@ -126,7 +137,10 @@ export default function Scene() {
         <div
           className="content-wrapper columns-layout"
           style={{
-            gap: window.innerWidth > 768 ? "4rem" : "2rem",
+            gap:
+              typeof window !== "undefined" && window.innerWidth > 768
+                ? "4rem"
+                : "2rem",
             justifyContent: "center",
           }}
         >
