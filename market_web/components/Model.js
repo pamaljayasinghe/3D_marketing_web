@@ -51,10 +51,18 @@ const Model = memo(function Model({ url, position, rotation, scale }) {
     let fs = scale;
     let fp = position;
     if (windowSize.width <= 768) {
-      if (url.includes("model1.glb")) {
+      if (
+        url.includes(
+          "https://pub-1b2d37fdeae24c88996f9d465643f09e.r2.dev/model1.glb"
+        )
+      ) {
         fs = scale * 0.8;
         fp = [position[0] - 0.5, position[1] + 0.2, position[2] + 0.3];
-      } else if (url.includes("model2.glb")) {
+      } else if (
+        url.includes(
+          "https://pub-1b2d37fdeae24c88996f9d465643f09e.r2.dev/model2.glb"
+        )
+      ) {
         fs = scale * 1.2;
         fp = [position[0], position[1] - 1.5, position[2] - 1];
       }
