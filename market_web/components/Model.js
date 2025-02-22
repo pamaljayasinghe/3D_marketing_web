@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense, memo, useMemo } from "react";
 import { Canvas } from "@react-three/fiber";
 import { motion } from "framer-motion";
 import {
@@ -9,62 +9,103 @@ import {
   Environment,
   PerspectiveCamera,
 } from "@react-three/drei";
-import "../app/styles/Model.css";
+import Image from "next/image";
 import Navbar from "./Navbar";
 import ComingSoon from "./coming";
 import TeamSection from "./team";
 import Footer from "./footer";
 
-function Model({ url, position, rotation, scale }) {
-  const { scene, animations } = useGLTF(url);
-  const { actions, names } = useAnimations(animations, scene);
-  const [windowWidth, setWindowWidth] = useState(1200); // Default value
+const useWindowSize = () => {
+  const [windowSize, setWindowSize] = useState({
+    width: undefined,
+    height: undefined,
+  });
 
   useEffect(() => {
-    // Update window width after component mounts
-    setWindowWidth(window.innerWidth);
+    function handleResize() {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
 
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  return windowSize;
+};
+
+const Model = memo(function Model({ url, position, rotation, scale }) {
+  const { scene, animations } = useGLTF(url);
+  const { actions, names } = useAnimations(animations, scene);
+  const windowSize = useWindowSize();
+
   useEffect(() => {
-    if (names.length > 0) {
-      const action = actions[names[0]];
-      if (action) {
-        action.reset().play();
-      }
+    if (names.length > 0 && actions[names[0]]) {
+      actions[names[0]].reset().play();
     }
   }, [actions, names]);
 
-  let finalScale = scale;
-  let finalPosition = position;
-
-  if (windowWidth <= 768) {
-    if (url.includes("model1.glb")) {
-      finalScale = scale * 0.8;
-      finalPosition = [position[0] - 0.5, position[1] + 0.2, position[2] + 0.3];
-    } else if (url.includes("model2.glb")) {
-      finalScale = scale * 1.2;
-      finalPosition = [position[0], position[1] - 1.5, position[2] - 1];
+  const { finalScale, finalPosition } = useMemo(() => {
+    let fs = scale;
+    let fp = position;
+    if (windowSize.width <= 768) {
+      if (url.includes("model1.glb")) {
+        fs = scale * 0.8;
+        fp = [position[0] - 0.5, position[1] + 0.2, position[2] + 0.3];
+      } else if (url.includes("model2.glb")) {
+        fs = scale * 1.2;
+        fp = [position[0], position[1] - 1.5, position[2] - 1];
+      }
     }
-  }
+    return { finalScale: fs, finalPosition: fp };
+  }, [windowSize.width, url, scale, position]);
 
   return (
-    <group>
-      <primitive
-        object={scene}
-        position={finalPosition}
-        rotation={rotation}
-        scale={finalScale}
-      />
-    </group>
+    <primitive
+      object={scene}
+      position={finalPosition}
+      rotation={rotation}
+      scale={finalScale}
+    />
   );
-}
+});
+
+const LoadingFallback = function LoadingFallback() {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        color: "white",
+      }}
+    >
+      Loading...
+    </div>
+  );
+};
+
+const SceneCanvas = memo(function SceneCanvas({ children, ...props }) {
+  return (
+    <Canvas {...props}>
+      <Suspense fallback={null}>
+        {children}
+        <Environment preset="lobby" />
+        <OrbitControls
+          enableZoom={false}
+          enablePan={false}
+          enableRotate={false}
+          minPolarAngle={Math.PI / 2}
+          maxPolarAngle={Math.PI / 2}
+        />
+      </Suspense>
+    </Canvas>
+  );
+});
 
 export default function Scene() {
   const [isMounted, setIsMounted] = useState(false);
@@ -73,14 +114,11 @@ export default function Scene() {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) {
-    return null; // Return null on server-side
-  }
+  if (!isMounted) return null;
 
   return (
     <main className="scene-container">
       <Navbar />
-
       <section className="first-section" id="home">
         <div className="hero-content">
           <h1 className="hero-title">Experience Fashion in 3D</h1>
@@ -100,10 +138,9 @@ export default function Scene() {
           </div>
         </div>
         <div className="canvas-wrapper">
-          <Canvas
+          <SceneCanvas
             shadows
             camera={{ position: [0, 0, 5], fov: 45 }}
-            className="canvas"
             gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
           >
             <ambientLight intensity={0.8} />
@@ -114,45 +151,24 @@ export default function Scene() {
               rotation={[0, -1.5707963267948966, 0]}
               scale={0.96}
             />
-            <Environment preset="lobby" />
-            <OrbitControls
-              enableZoom={false}
-              enablePan={false}
-              enableRotate={false}
-              minPolarAngle={Math.PI / 2}
-              maxPolarAngle={Math.PI / 2}
-            />
-          </Canvas>
+          </SceneCanvas>
         </div>
-        <img
-          src="/models/chair2.png"
-          alt="Overlay Image"
-          className="overlay-image"
-        />
+        <div className="overlay-image-container">
+          <Image
+            src="/models/chair2.png"
+            alt="Overlay"
+            width={250}
+            height={250}
+            className="overlay-image"
+            priority={false}
+          />
+        </div>
       </section>
 
       <section className="second-section" id="features">
         <h2 className="section-title">Discover Our Features</h2>
-
-        <div
-          className="content-wrapper columns-layout"
-          style={{
-            gap:
-              typeof window !== "undefined" && window.innerWidth > 768
-                ? "4rem"
-                : "2rem",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            className="column"
-            style={{
-              gap: window.innerWidth > 768 ? "4rem" : "2rem",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
+        <div className="content-wrapper columns-layout">
+          <div className="column">
             <motion.div
               className="feature-box top-left"
               initial={{ opacity: 0, y: -50 }}
@@ -173,7 +189,7 @@ export default function Scene() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 1 }}
             >
-              <h3>Immersive Environments </h3>
+              <h3>Immersive Environments</h3>
               <p>
                 Step into a hyper-realistic 3D fashion world with Fit-On. Our
                 advanced augmented reality (AR) and 3D modeling technology
@@ -183,11 +199,8 @@ export default function Scene() {
             </motion.div>
           </div>
 
-          <div
-            className="model-container"
-            style={{ margin: window.innerWidth > 768 ? "0 4rem" : "0 2rem" }}
-          >
-            <Canvas
+          <div className="model-container">
+            <SceneCanvas
               shadows
               gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
               dpr={[1, 2]}
@@ -212,26 +225,10 @@ export default function Scene() {
                 rotation={[0, -1.57, 0]}
                 scale={3}
               />
-              <Environment preset="studio" />
-              <OrbitControls
-                enableZoom={false}
-                enablePan={false}
-                enableRotate={false}
-                minPolarAngle={Math.PI / 2}
-                maxPolarAngle={Math.PI / 2}
-              />
-            </Canvas>
+            </SceneCanvas>
           </div>
 
-          <div
-            className="column"
-            style={{
-              gap: window.innerWidth > 768 ? "4rem" : "2rem",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
+          <div className="column">
             <motion.div
               className="feature-box top-right"
               initial={{ opacity: 0, y: -50 }}

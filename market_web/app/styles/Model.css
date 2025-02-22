@@ -33,6 +33,61 @@ body {
   height: 100%;
   z-index: 5;
 }
+.overlay-image-container {
+  position: absolute;
+  bottom: 170px;
+  right: 360px;
+  width: min(250px, 25vw);
+  height: auto;
+  z-index: 2;
+}
+
+.overlay-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 1200px) {
+  .overlay-image-container {
+    position: absolute;
+    bottom: 200px;
+    right: 90px;
+    width: 150px;
+  }
+}
+/* Add these performance optimizations to your existing CSS */
+.canvas-wrapper {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.model-container canvas {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+@media (max-width: 768px) {
+  .model-container {
+    height: 400px;
+  }
+
+  .canvas-wrapper {
+    height: 60vh;
+  }
+}
+
+/* Add loading state styles */
+.loading {
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+}
+
+.loaded {
+  opacity: 1;
+}
 
 .overlay-text {
   position: absolute;
@@ -42,15 +97,6 @@ body {
   font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: bold;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
-}
-
-.overlay-image {
-  position: absolute;
-  bottom: 150px;
-  right: 400px;
-  width: min(250px, 25vw);
-  height: auto;
-  z-index: 2;
 }
 
 /* Section 2 - New 3D Model + Features */
@@ -140,33 +186,36 @@ body {
 /* Responsive Adjustments */
 @media (max-width: 1200px) {
   .columns-layout {
-    gap: 2rem !important;
-  }
-  .column {
-    gap: 2rem !important;
-  }
-  .overlay-image {
-    position: absolute;
-    top: 670px;
-    right: 70px;
-    width: 150px;
-    height: auto;
-    z-index: 2;
-  }
-  .content-wrapper {
-    flex-direction: column;
-    align-items: center;
-    gap: 3rem;
+    gap: 2rem;
   }
 
   .column {
-    gap: 3rem;
+    gap: 2rem;
+  }
+
+  .content-wrapper {
+    flex-direction: column;
+    gap: 2rem;
   }
 
   .model-container {
     height: 700px;
     order: -1;
     margin: 2rem 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 0 1rem;
+  }
+
+  .column {
+    gap: 1.5rem;
+  }
+
+  .model-container {
+    height: 400px;
   }
 }
 
