@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { motion } from "framer-motion";
 import {
@@ -14,6 +14,9 @@ import "../app/styles/Model.css";
 function Model({ url, position, rotation, scale }) {
   const { scene, animations } = useGLTF(url);
   const { actions, names } = useAnimations(animations, scene);
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200
+  );
 
   useEffect(() => {
     if (names.length > 0) {
@@ -24,13 +27,44 @@ function Model({ url, position, rotation, scale }) {
     }
   }, [actions, names]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [url]);
+
+  // Add responsive adjustments for both models
+  let finalScale = scale;
+  let finalPosition = position;
+
+  if (windowWidth <= 768) {
+    if (url.includes("model1.glb")) {
+      finalScale = scale * 0.8;
+      finalPosition = [
+        position[0] - 0.5, // Adjust X: negative moves left
+        position[1] + 0.2, // Adjust Y: positive moves up
+        position[2] + 0.3, // Adjust Z: positive moves away
+      ];
+    } else if (url.includes("model2.glb")) {
+      finalScale = scale * 0.6; // Reduce scale more for second model
+      finalPosition = [
+        position[0], // Keep centered horizontally
+        position[1] + 1, // Move up slightly
+        position[2] - 1, // Bring closer to camera
+      ];
+    }
+  }
+
   return (
     <group>
       <primitive
         object={scene}
-        position={position}
+        position={finalPosition}
         rotation={rotation}
-        scale={scale}
+        scale={finalScale}
       />
     </group>
   );
@@ -101,8 +135,8 @@ export default function Scene() {
             >
               <PerspectiveCamera
                 makeDefault
-                position={[0, 0, 8]} // Moved camera back
-                fov={50} // Adjusted field of view
+                position={[0, 0, 8]}
+                fov={50}
                 near={0.1}
                 far={1000}
               />
@@ -115,9 +149,9 @@ export default function Scene() {
               />
               <Model
                 url="/models/model2.glb"
-                position={[0, -2, 0]} // Adjusted Y position down
+                position={[0, -2, 0]}
                 rotation={[0, -1.57, 0]}
-                scale={3} // Adjusted scale
+                scale={3}
               />
               <Environment preset="studio" />
               <OrbitControls
@@ -140,6 +174,26 @@ export default function Scene() {
             <p>Engage with 3D content like never before.</p>
           </motion.div>
         </div>
+
+        <motion.div
+          className="floating-box top-left"
+          initial={{ opacity: 0, y: -50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+        >
+          <h3>Premium Quality</h3>
+          <p>Experience the highest quality 3D renderings.</p>
+        </motion.div>
+
+        <motion.div
+          className="floating-box top-right"
+          initial={{ opacity: 0, y: -50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+        >
+          <h3>Custom Solutions</h3>
+          <p>Tailored 3D experiences for your specific needs.</p>
+        </motion.div>
       </section>
     </main>
   );
