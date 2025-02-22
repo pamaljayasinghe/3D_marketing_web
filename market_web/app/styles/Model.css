@@ -58,7 +58,7 @@ body {
   position: relative;
   width: 100%;
   min-height: 100vh;
-  background-color: #121212;
+  background-color: #120622;
   color: white;
   display: flex;
   flex-direction: column;
@@ -71,6 +71,7 @@ body {
 .section-title {
   font-size: clamp(2rem, 5vw, 2.5rem);
   margin-bottom: 4rem;
+  margin-top: 2rem;
   text-align: center;
 }
 
@@ -138,9 +139,15 @@ body {
 
 /* Responsive Adjustments */
 @media (max-width: 1200px) {
+  .columns-layout {
+    gap: 2rem !important;
+  }
+  .column {
+    gap: 2rem !important;
+  }
   .overlay-image {
     position: absolute;
-    top: 600px;
+    top: 520px;
     right: 70px;
     width: 150px;
     height: auto;
@@ -397,5 +404,207 @@ body {
   .nav-logo {
     width: 45px;
     height: 45px;
+  }
+}
+/* ComingSoonSection.css */
+.cs-container {
+  min-height: 110vh; /* Increased height to ensure full visibility */
+  background: linear-gradient(135deg, #f3f4ff 0%, #e5e7ff 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.cs-background-text {
+  position: absolute;
+  font-size: 25vw;
+  font-weight: bold;
+  color: rgba(103, 58, 183, 0.05);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cs-content-wrapper {
+  width: 100%;
+  max-width: 1400px;
+  min-height: 1000px; /* Increased min-height to prevent clipping */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 5;
+  gap: 40px;
+}
+
+.cs-timer-section {
+  flex: 1;
+  padding-right: 40px;
+  text-align: center;
+}
+
+.cs-timer-section h1 {
+  font-size: 48px;
+  color: #673ab7;
+  margin-bottom: 40px;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.cs-countdown-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.cs-countdown-item {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-width: 100px;
+}
+
+.cs-countdown-value {
+  font-size: 36px;
+  font-weight: bold;
+  color: #673ab7;
+  margin-bottom: 5px;
+}
+
+.cs-countdown-label {
+  color: #666;
+  font-size: 14px;
+}
+
+.cs-countdown-separator {
+  font-size: 36px;
+  font-weight: bold;
+  color: #673ab7;
+}
+
+.cs-platform-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.cs-platform-btn {
+  padding: 12px 30px;
+  border-radius: 25px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cs-platform-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.cs-platform-btn.ios-btn {
+  background: #673ab7;
+  color: white;
+}
+
+.cs-platform-btn.web-btn {
+  background: #9c27b0;
+  color: white;
+}
+
+/* 3D Model Section */
+.cs-model-section {
+  flex: 1;
+  height: 1000px; /* Increased height */
+  position: relative;
+  z-index: 10; /* Bring the model in front */
+  overflow: visible; /* Ensure model is fully visible */
+}
+
+.cs-model-section canvas {
+  width: 100% !important;
+  height: 100% !important;
+  position: relative;
+  z-index: 15; /* Ensures 3D model is in front */
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .cs-content-wrapper {
+    gap: 20px;
+  }
+
+  .cs-timer-section {
+    padding-right: 20px;
+  }
+
+  .cs-countdown-item {
+    min-width: 80px;
+    padding: 15px;
+  }
+
+  .cs-countdown-value {
+    font-size: 30px;
+  }
+
+  .cs-model-section {
+    height: 800px; /* Adjust height for tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .cs-container {
+    padding: 20px 10px;
+  }
+
+  .cs-content-wrapper {
+    flex-direction: column;
+    min-height: auto;
+    gap: 20px;
+  }
+
+  .cs-timer-section {
+    padding-right: 0;
+    text-align: center;
+  }
+
+  .cs-timer-section h1 {
+    font-size: 36px;
+    margin-bottom: 30px;
+  }
+
+  .cs-countdown-wrapper {
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 30px;
+  }
+
+  .cs-countdown-item {
+    min-width: 60px;
+    padding: 10px;
+  }
+
+  .cs-countdown-value {
+    font-size: 24px;
+  }
+
+  .cs-platform-buttons {
+    justify-content: center;
+  }
+
+  .cs-model-section {
+    height: 600px; /* Increased height for mobile */
+    width: 100%;
+    z-index: 20; /* Ensure it stays in front */
+  }
+
+  .cs-background-text {
+    font-size: 40vw;
   }
 }

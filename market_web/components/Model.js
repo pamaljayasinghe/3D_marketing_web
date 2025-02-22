@@ -11,6 +11,7 @@ import {
 } from "@react-three/drei";
 import "../app/styles/Model.css";
 import Navbar from "./Navbar";
+import ComingSoon from "./coming";
 
 function Model({ url, position, rotation, scale }) {
   const { scene, animations } = useGLTF(url);
@@ -209,6 +210,9 @@ export default function Scene() {
             </motion.div>
           </div>
         </div>
+      </section>
+      <section className="coming-soon-section">
+        <ComingSoon />
       </section>
     </main>
   );
