@@ -1,4 +1,4 @@
-// Footer.js
+"use client";
 import React from "react";
 import "../app/styles/footer.css";
 

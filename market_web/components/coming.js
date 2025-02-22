@@ -1,4 +1,4 @@
-// ComingSoon.js
+"use client";
 import React, { useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
