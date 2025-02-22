@@ -37,7 +37,7 @@ const TeamSection = () => {
   ];
 
   return (
-    <section className="team-section">
+    <section className="team-section" id="about">
       <div className="team-container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

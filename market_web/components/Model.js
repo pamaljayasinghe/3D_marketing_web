@@ -70,7 +70,24 @@ export default function Scene() {
     <main className="scene-container">
       <Navbar />
 
-      <section className="first-section">
+      <section className="first-section" id="home">
+        <div className="hero-content">
+          <h1 className="hero-title">Experience Fashion in 3D</h1>
+          <p className="hero-description">
+            Discover the future of fashion with Fit-On, the ultimate 3D virtual
+            dressing room. Transform your shopping experience with AI-powered
+            outfit recommendations, LiDAR-based body modeling, and augmented
+            reality try-ons.
+          </p>
+          <div className="hero-buttons">
+            <a href="#about" className="hero-button hero-button-primary">
+              About Us
+            </a>
+            <a href="#contact" className="hero-button hero-button-secondary">
+              Contact
+            </a>
+          </div>
+        </div>
         <div className="canvas-wrapper">
           <Canvas
             shadows
@@ -90,11 +107,12 @@ export default function Scene() {
             <OrbitControls
               enableZoom={false}
               enablePan={false}
-              enableRotate={true}
+              enableRotate={false}
+              minPolarAngle={Math.PI / 2}
+              maxPolarAngle={Math.PI / 2}
             />
           </Canvas>
         </div>
-        <div className="overlay-text">Welcome to Our 3D Experience</div>
         <img
           src="/models/chair2.png"
           alt="Overlay Image"
@@ -127,8 +145,13 @@ export default function Scene() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
             >
-              <h3>Immersive Environments</h3>
-              <p>Explore highly detailed and interactive 3D worlds.</p>
+              <h3>Interactive Experiences</h3>
+              <p>
+                Enhance your shopping journey with virtual try-ons and real-time
+                fashion recommendations. Scan in-store QR codes, mix and match
+                outfits in your digital closet, and enjoy a seamless online
+                shopping experience with direct retailer integrations.
+              </p>
             </motion.div>
             <motion.div
               className="feature-box left"
@@ -136,9 +159,12 @@ export default function Scene() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 1 }}
             >
-              <h3>Realistic Animations</h3>
+              <h3>Immersive Environments </h3>
               <p>
-                Our 3D characters come with smooth and expressive animations.
+                Step into a hyper-realistic 3D fashion world with Fit-On. Our
+                advanced augmented reality (AR) and 3D modeling technology
+                create an engaging and interactive experience, allowing you to
+                visualize outfits in a lifelike setting.
               </p>
             </motion.div>
           </div>
@@ -198,8 +224,13 @@ export default function Scene() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
             >
-              <h3>Customizable Features</h3>
-              <p>Adjust the experience to suit your needs with ease.</p>
+              <h3>Realistic Animations</h3>
+              <p>
+                Experience the most lifelike virtual try-on experience with our
+                AI-powered animations. Using LiDAR scanning technology, our
+                avatars accurately reflect your body measurements, ensuring
+                every movement and fit feels natural.
+              </p>
             </motion.div>
             <motion.div
               className="feature-box right"
@@ -207,8 +238,12 @@ export default function Scene() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 1 }}
             >
-              <h3>Interactive Experiences</h3>
-              <p>Engage with 3D content like never before.</p>
+              <h3>Customizable Features</h3>
+              <p>
+                Your style, your way! With personalized body modeling, wardrobe
+                organization, and weather-based outfit recommendations, Fit-On
+                tailors every aspect of fashion to your unique preferences.
+              </p>
             </motion.div>
           </div>
         </div>
