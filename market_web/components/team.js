@@ -23,17 +23,17 @@ const TeamSection = () => {
     {
       name: "Aeron Wijetunge",
       role: "Full-Stack Developer",
-      image: "/api/placeholder/150/150",
+      image: "/models/profile.png",
     },
     {
       name: "Pasan Hewawasam",
       role: "Frontend Developer",
-      image: "/api/placeholder/150/150",
+      image: "/models/profile.png",
     },
     {
       name: "Vishnu Priyan",
       role: "Frontend Developer",
-      image: "/api/placeholder/150/150",
+      image: "/models/profile.png",
     },
   ];
 

@@ -40,7 +40,7 @@ function Model({ url, position, rotation, scale }) {
   let finalPosition = position;
 
   if (windowWidth <= 768) {
-    finalScale = [1.7, 1.7, 1.7];
+    finalScale = [1.9, 1.9, 1.9];
     finalPosition = [position[0], position[1] - 0.1, position[2] + 0.5];
   }
 

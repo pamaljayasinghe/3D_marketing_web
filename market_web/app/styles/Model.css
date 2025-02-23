@@ -33,64 +33,6 @@ body {
   height: 100%;
   z-index: 5;
 }
-.overlay-image-container {
-  position: absolute;
-  bottom: 170px;
-  right: 360px;
-  width: min(250px, 25vw);
-  height: auto;
-  z-index: 2;
-}
-
-.overlay-image {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-}
-
-@media (max-width: 1200px) {
-  .overlay-image-container {
-    position: absolute;
-    bottom: 200px;
-    right: 90px;
-    width: 150px;
-  }
-}
-/* Add these performance optimizations to your existing CSS */
-.canvas-wrapper {
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  perspective: 1000;
-  will-change: transform;
-}
-
-.model-container canvas {
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  perspective: 1000;
-  will-change: transform;
-}
-
-@media (max-width: 768px) {
-  .canvas-wrapper {
-    height: 50vh;
-    transform: translate3d(0, 0, 0);
-  }
-
-  .model-container {
-    height: 60vh;
-  }
-}
-
-/* Add loading state styles */
-.loading {
-  opacity: 0;
-  transition: opacity 0.3s ease-in;
-}
-
-.loaded {
-  opacity: 1;
-}
 
 .overlay-text {
   position: absolute;
@@ -100,6 +42,15 @@ body {
   font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: bold;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.overlay-image {
+  position: absolute;
+  bottom: 150px;
+  right: 400px;
+  width: min(250px, 25vw);
+  height: auto;
+  z-index: 2;
 }
 
 /* Section 2 - New 3D Model + Features */
@@ -181,44 +132,40 @@ body {
 }
 
 .model-container canvas {
-  width: 100% !important;
-  height: 100% !important;
+  width: 100%;
+  height: 100%;
   outline: none;
 }
 
 /* Responsive Adjustments */
 @media (max-width: 1200px) {
   .columns-layout {
-    gap: 2rem;
+    gap: 2rem !important;
   }
-
   .column {
-    gap: 2rem;
+    gap: 2rem !important;
   }
-
+  .overlay-image {
+    position: absolute;
+    bottom: 14%;
+    right: 15%;
+    width: 150px;
+    height: auto;
+    z-index: 2;
+  }
   .content-wrapper {
     flex-direction: column;
-    gap: 2rem;
-  }
-
-  .model-container {
-    height: 700px;
-    order: -1;
-    margin: 2rem 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .content-wrapper {
-    padding: 0 1rem;
+    align-items: center;
+    gap: 3rem;
   }
 
   .column {
-    gap: 1.5rem;
+    gap: 3rem;
   }
 
   .model-container {
-    height: 400px;
+    order: -1;
+    margin: 2rem 0;
   }
 }
 
@@ -237,10 +184,38 @@ body {
   }
 
   .model-container {
-    height: 500px;
+    height: 400px !important;
     margin: 1rem 0;
   }
 
+  .model-container {
+    height: 400px !important; /* Override all inherited heights */
+    min-height: 400px !important;
+    max-height: 400px !important;
+  }
+
+  .model-container div {
+    height: 400px !important;
+  }
+
+  .model-container canvas {
+    height: 400px !important; /* Force the canvas inside to obey this */
+  }
+  .cs-model-section {
+    height: 500px !important; /* Ensure it's 400px */
+    min-height: 500px !important;
+    max-height: 500px !important;
+    width: 100% !important;
+    overflow: hidden;
+  }
+
+  .cs-model-section div {
+    height: 500px !important;
+  }
+
+  .cs-model-section canvas {
+    height: 500px !important;
+  }
   .feature-box {
     padding: 1.5rem;
   }
@@ -584,11 +559,7 @@ body {
   width: 100% !important;
   height: 100% !important;
   position: relative;
-  z-index: 15;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  perspective: 1000;
-  will-change: transform; /* Ensures 3D model is in front */
+  z-index: 15; /* Ensures 3D model is in front */
 }
 
 /* Responsive Styles */

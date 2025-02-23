@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, Suspense, memo, useMemo } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { motion } from "framer-motion";
 import {
@@ -8,67 +8,72 @@ import {
   OrbitControls,
   Environment,
   PerspectiveCamera,
+  AdaptiveDpr,
+  BakeShadows,
+  AdaptiveEvents,
+  PerformanceMonitor,
 } from "@react-three/drei";
-import Image from "next/image";
+import "../app/styles/Model.css";
 import Navbar from "./Navbar";
 import ComingSoon from "./coming";
 import TeamSection from "./team";
 import Footer from "./footer";
 
-const useWindowSize = () => {
-  const [windowSize, setWindowSize] = useState({
-    width: undefined,
-    height: undefined,
-  });
-
-  useEffect(() => {
-    function handleResize() {
-      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    }
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  return windowSize;
-};
-
-const Model = memo(function Model({ url, position, rotation, scale }) {
-  const { scene, animations } = useGLTF(url, true);
+function Model({ url, position, rotation, scale }) {
+  const { scene, animations } = useGLTF(url, true); // Enable DRACO compression
   const { actions, names } = useAnimations(animations, scene);
-  const windowSize = useWindowSize();
+  const [windowWidth, setWindowWidth] = useState(1200);
 
   useEffect(() => {
-    if (names.length > 0 && actions[names[0]]) {
+    // Optimize scene
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.frustumCulled = true;
+        child.castShadow = false;
+        child.receiveShadow = false;
+
+        if (child.material) {
+          child.material.precision = windowWidth <= 768 ? "lowp" : "highp";
+          if (child.material.map) {
+            child.material.map.anisotropy = 1;
+          }
+        }
+      }
+    });
+
+    // Debounced resize handler
+    const handleResize = debounce(() => {
+      setWindowWidth(window.innerWidth);
+    }, 250);
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Initial call
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, [scene, windowWidth]);
+
+  useEffect(() => {
+    if (names.length > 0) {
       const action = actions[names[0]];
-      action.reset().play();
-      return () => action.stop();
+      if (action) {
+        action.reset().play();
+        action.setEffectiveTimeScale(0.8);
+      }
     }
   }, [actions, names]);
 
-  const { finalScale, finalPosition } = useMemo(() => {
-    let fs = scale;
-    let fp = position;
-    if (windowSize.width <= 768) {
-      if (
-        url.includes(
-          "https://pub-1b2d37fdeae24c88996f9d465643f09e.r2.dev/model1.glb"
-        )
-      ) {
-        fs = scale * 0.8;
-        fp = [position[0] - 0.5, position[1] + 0.2, position[2] + 0.3];
-      } else if (
-        url.includes(
-          "https://pub-1b2d37fdeae24c88996f9d465643f09e.r2.dev/model2.glb"
-        )
-      ) {
-        fs = scale * 1.2;
-        fp = [position[0], position[1] - 1.5, position[2] - 1];
-      }
+  let finalScale = scale;
+  let finalPosition = position;
+
+  if (windowWidth <= 768) {
+    if (url.includes("model1.glb")) {
+      finalScale = scale * 0.8;
+      finalPosition = [position[0] - 0.5, position[1] + 0.2, position[2] + 0.3];
+    } else if (url.includes("model2.glb")) {
+      finalScale = scale * 1.5;
+      finalPosition = [position[0], position[1] - 1.9, position[2] - 1];
     }
-    return { finalScale: fs, finalPosition: fp };
-  }, [windowSize.width, url, scale, position]);
+  }
 
   return (
     <primitive
@@ -78,58 +83,68 @@ const Model = memo(function Model({ url, position, rotation, scale }) {
       scale={finalScale}
     />
   );
-});
+}
 
-const SceneCanvas = memo(function SceneCanvas({ children, ...props }) {
-  const canvasProps = useMemo(
-    () => ({
-      dpr:
-        typeof window !== "undefined"
-          ? Math.min(window.devicePixelRatio, 2)
-          : 1,
-      gl: {
-        antialias: true,
-        alpha: true,
-        preserveDrawingBuffer: true,
-        powerPreference: "high-performance",
-        stencil: false,
-        depth: true,
-      },
-      ...props,
-    }),
-    [props]
-  );
+// Optimized Canvas component
+function OptimizedCanvas({ children, cameraProps, preset = "lobby" }) {
+  const [dpr, setDpr] = useState(1);
 
   return (
-    <Canvas {...canvasProps}>
+    <Canvas
+      shadows={false}
+      dpr={dpr}
+      gl={{
+        antialias: false,
+        alpha: true,
+        powerPreference: "high-performance",
+        precision: "lowp",
+      }}
+      camera={cameraProps}
+    >
       <Suspense fallback={null}>
-        {children}
-        <Environment preset="lobby" />
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          enableRotate={false}
-          minPolarAngle={Math.PI / 2}
-          maxPolarAngle={Math.PI / 2}
-        />
+        <PerformanceMonitor
+          onIncline={() => setDpr(2)}
+          onDecline={() => setDpr(1)}
+        >
+          {children}
+        </PerformanceMonitor>
+        <Environment preset={preset} />
+        <AdaptiveDpr pixelated />
+        <BakeShadows />
+        <AdaptiveEvents />
       </Suspense>
     </Canvas>
   );
-});
+}
+
+// Utility function
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
 
 export default function Scene() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    return () => setIsMounted(false);
   }, []);
 
-  if (!isMounted) return null;
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <main className="scene-container">
       <Navbar />
+
       <section className="first-section" id="home">
         <div className="hero-content">
           <h1 className="hero-title">Experience Fashion in 3D</h1>
@@ -149,31 +164,34 @@ export default function Scene() {
           </div>
         </div>
         <div className="canvas-wrapper">
-          <SceneCanvas shadows camera={{ position: [0, 0, 5], fov: 45 }}>
-            <ambientLight intensity={0.8} />
-            <pointLight position={[10, 10, 10]} intensity={1} />
+          <OptimizedCanvas cameraProps={{ position: [0, 0, 5], fov: 45 }}>
+            <ambientLight intensity={0.6} />
+            <pointLight position={[10, 10, 10]} intensity={0.8} />
             <Model
               url="/models/model1.glb"
               position={[0, -1, 0]}
               rotation={[0, -1.5707963267948966, 0]}
               scale={0.96}
             />
-          </SceneCanvas>
+            <OrbitControls
+              enableZoom={false}
+              enablePan={false}
+              enableRotate={false}
+              minPolarAngle={Math.PI / 2}
+              maxPolarAngle={Math.PI / 2}
+            />
+          </OptimizedCanvas>
         </div>
-        <div className="overlay-image-container">
-          <Image
-            src="/models/chair2.png"
-            alt="Overlay"
-            width={250}
-            height={250}
-            className="overlay-image"
-            priority={true}
-          />
-        </div>
+        <img
+          src="/models/chair2.png"
+          alt="Overlay Image"
+          className="overlay-image"
+        />
       </section>
 
       <section className="second-section" id="features">
         <h2 className="section-title">Discover Our Features</h2>
+
         <div className="content-wrapper columns-layout">
           <div className="column">
             <motion.div
@@ -207,28 +225,26 @@ export default function Scene() {
           </div>
 
           <div className="model-container">
-            <SceneCanvas shadows>
-              <PerspectiveCamera
-                makeDefault
-                position={[0, 0, 8]}
-                fov={50}
-                near={0.1}
-                far={1000}
-              />
-              <ambientLight intensity={0.8} />
-              <pointLight position={[10, 10, 10]} intensity={1} />
-              <directionalLight
-                position={[0, 5, 5]}
-                intensity={0.5}
-                castShadow
-              />
+            <OptimizedCanvas
+              cameraProps={{ position: [0, 0, 8], fov: 50 }}
+              preset="studio"
+            >
+              <ambientLight intensity={0.6} />
+              <pointLight position={[10, 10, 10]} intensity={0.8} />
               <Model
                 url="/models/model2.glb"
                 position={[0, -2, 0]}
                 rotation={[0, -1.57, 0]}
                 scale={3}
               />
-            </SceneCanvas>
+              <OrbitControls
+                enableZoom={false}
+                enablePan={false}
+                enableRotate={false}
+                minPolarAngle={Math.PI / 2}
+                maxPolarAngle={Math.PI / 2}
+              />
+            </OptimizedCanvas>
           </div>
 
           <div className="column">
