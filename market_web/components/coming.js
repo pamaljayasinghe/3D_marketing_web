@@ -1,12 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
-import {
-  OrbitControls,
-  Environment,
-  useGLTF,
-  useAnimations,
-} from "@react-three/drei";
+import { OrbitControls, Environment, useAnimations } from "@react-three/drei";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import "../app/styles/Model.css";
@@ -16,8 +11,8 @@ import { FaApple, FaGlobe } from "react-icons/fa";
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath(
   "https://www.gstatic.com/draco/versioned/decoders/1.5.6/"
-); // Use the latest version
-dracoLoader.setDecoderConfig({ type: "js" }); // Use JavaScript decoder
+);
+dracoLoader.setDecoderConfig({ type: "js" });
 
 // Configure GLTF loader with Draco
 const gltfLoader = new GLTFLoader();
@@ -40,6 +35,12 @@ function useGLTFWithDraco(url) {
         console.error("Error loading model:", error);
       }
     );
+
+    return () => {
+      if (dracoLoader) {
+        dracoLoader.dispose();
+      }
+    };
   }, [url]);
 
   return { scene: model, animations };
@@ -48,10 +49,9 @@ function useGLTFWithDraco(url) {
 function Model({ url, position, rotation, scale }) {
   const { scene, animations } = useGLTFWithDraco(url);
   const { actions, names } = useAnimations(animations, scene);
-  const [windowWidth, setWindowWidth] = useState(1200); // Default value
+  const [windowWidth, setWindowWidth] = useState(1200);
 
   useEffect(() => {
-    // Update window width after component mounts
     setWindowWidth(window.innerWidth);
 
     const handleResize = () => {
@@ -59,13 +59,7 @@ function Model({ url, position, rotation, scale }) {
     };
 
     window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      // Cleanup Draco loader
-      if (dracoLoader) {
-        dracoLoader.dispose();
-      }
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
@@ -136,7 +130,7 @@ export default function ComingSoon() {
   }, []);
 
   if (!isMounted) {
-    return null; // Return null on server-side
+    return null;
   }
 
   return (
@@ -202,7 +196,7 @@ export default function ComingSoon() {
             <ambientLight intensity={0.8} />
             <pointLight position={[10, 10, 10]} intensity={1} />
             <Model
-              url="/models/model03.glb"
+              url="https://pub-1b2d37fdeae24c88996f9d465643f09e.r2.dev/model03.glb"
               position={[0, -1.6, 0]}
               rotation={[0, -1.5707963267948966, 0]}
               scale={[1.5, 1.5, 1.5]}

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { motion } from "framer-motion";
 import {
-  useGLTF,
   useAnimations,
   OrbitControls,
   Environment,
