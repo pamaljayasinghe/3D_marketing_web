@@ -15,19 +15,17 @@ import TeamSection from "./team";
 import Footer from "./footer";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { useAnimationControl } from "./useAnimationControl";
 
-// Configure Draco loader
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath(
   "https://www.gstatic.com/draco/versioned/decoders/1.5.6/"
 );
 dracoLoader.setDecoderConfig({ type: "js" });
 
-// Configure GLTF loader with Draco
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
-// Custom hook for loading GLTF models with Draco compression
 function useGLTFWithDraco(url) {
   const [model, setModel] = useState(null);
   const [animations, setAnimations] = useState([]);
@@ -46,7 +44,6 @@ function useGLTFWithDraco(url) {
     );
 
     return () => {
-      // Cleanup when component unmounts
       if (dracoLoader) {
         dracoLoader.dispose();
       }
@@ -56,13 +53,14 @@ function useGLTFWithDraco(url) {
   return { scene: model, animations };
 }
 
-function Model({ url, position, rotation, scale }) {
+function Model({ url, position, rotation, scale, sectionId }) {
   const { scene, animations } = useGLTFWithDraco(url);
   const { actions, names } = useAnimations(animations, scene);
-  const [windowWidth, setWindowWidth] = useState(1200); // Default value
+  const [windowWidth, setWindowWidth] = useState(1200);
+
+  useAnimationControl(animations, actions, names, sectionId);
 
   useEffect(() => {
-    // Update window width after component mounts
     setWindowWidth(window.innerWidth);
 
     const handleResize = () => {
@@ -72,15 +70,6 @@ function Model({ url, position, rotation, scale }) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  useEffect(() => {
-    if (names.length > 0) {
-      const action = actions[names[0]];
-      if (action) {
-        action.reset().play();
-      }
-    }
-  }, [actions, names]);
 
   let finalScale = scale;
   let finalPosition = position;
@@ -117,7 +106,7 @@ export default function Scene() {
   }, []);
 
   if (!isMounted) {
-    return null; // Return null on server-side
+    return null;
   }
 
   return (
@@ -156,6 +145,7 @@ export default function Scene() {
               position={[0, -1, 0]}
               rotation={[0, -1.5707963267948966, 0]}
               scale={0.96}
+              sectionId="home"
             />
             <Environment preset="lobby" />
             <OrbitControls
@@ -177,25 +167,8 @@ export default function Scene() {
       <section className="second-section" id="features">
         <h2 className="section-title">Discover Our Features</h2>
 
-        <div
-          className="content-wrapper columns-layout"
-          style={{
-            gap:
-              typeof window !== "undefined" && window.innerWidth > 768
-                ? "4rem"
-                : "2rem",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            className="column"
-            style={{
-              gap: window.innerWidth > 768 ? "4rem" : "2rem",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
+        <div className="content-wrapper columns-layout">
+          <div className="column">
             <motion.div
               className="feature-box top-left"
               initial={{ opacity: 0, y: -50 }}
@@ -216,7 +189,7 @@ export default function Scene() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 1 }}
             >
-              <h3>Immersive Environments </h3>
+              <h3>Immersive Environments</h3>
               <p>
                 Step into a hyper-realistic 3D fashion world with Fit-On. Our
                 advanced augmented reality (AR) and 3D modeling technology
@@ -226,10 +199,7 @@ export default function Scene() {
             </motion.div>
           </div>
 
-          <div
-            className="model-container"
-            style={{ margin: window.innerWidth > 768 ? "0 4rem" : "0 2rem" }}
-          >
+          <div className="model-container">
             <Canvas
               shadows
               gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
@@ -254,6 +224,7 @@ export default function Scene() {
                 position={[0, -2, 0]}
                 rotation={[0, -1.57, 0]}
                 scale={3}
+                sectionId="features"
               />
               <Environment preset="studio" />
               <OrbitControls
@@ -266,15 +237,7 @@ export default function Scene() {
             </Canvas>
           </div>
 
-          <div
-            className="column"
-            style={{
-              gap: window.innerWidth > 768 ? "4rem" : "2rem",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
+          <div className="column">
             <motion.div
               className="feature-box top-right"
               initial={{ opacity: 0, y: -50 }}

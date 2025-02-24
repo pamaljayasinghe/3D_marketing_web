@@ -6,19 +6,17 @@ import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import "../app/styles/Model.css";
 import { FaApple, FaGlobe } from "react-icons/fa";
+import { useAnimationControl } from "./useAnimationControl";
 
-// Configure Draco loader
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath(
   "https://www.gstatic.com/draco/versioned/decoders/1.5.6/"
 );
 dracoLoader.setDecoderConfig({ type: "js" });
 
-// Configure GLTF loader with Draco
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
-// Custom hook for loading GLTF models with Draco compression
 function useGLTFWithDraco(url) {
   const [model, setModel] = useState(null);
   const [animations, setAnimations] = useState([]);
@@ -46,10 +44,12 @@ function useGLTFWithDraco(url) {
   return { scene: model, animations };
 }
 
-function Model({ url, position, rotation, scale }) {
+function Model({ url, position, rotation, scale, sectionId }) {
   const { scene, animations } = useGLTFWithDraco(url);
   const { actions, names } = useAnimations(animations, scene);
   const [windowWidth, setWindowWidth] = useState(1200);
+
+  useAnimationControl(animations, actions, names, sectionId);
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -61,15 +61,6 @@ function Model({ url, position, rotation, scale }) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  useEffect(() => {
-    if (names.length > 0) {
-      const action = actions[names[0]];
-      if (action) {
-        action.reset().play();
-      }
-    }
-  }, [actions, names]);
 
   let finalScale = scale;
   let finalPosition = position;
@@ -200,6 +191,7 @@ export default function ComingSoon() {
               position={[0, -1.6, 0]}
               rotation={[0, -1.5707963267948966, 0]}
               scale={[1.5, 1.5, 1.5]}
+              sectionId="comingsoon"
             />
             <Environment preset="lobby" />
             <OrbitControls
