@@ -7,11 +7,46 @@ import {
   useGLTF,
   useAnimations,
 } from "@react-three/drei";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import "../app/styles/Model.css";
 import { FaApple, FaGlobe } from "react-icons/fa";
 
+// Configure Draco loader
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath(
+  "https://www.gstatic.com/draco/versioned/decoders/1.5.6/"
+); // Use the latest version
+dracoLoader.setDecoderConfig({ type: "js" }); // Use JavaScript decoder
+
+// Configure GLTF loader with Draco
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+
+// Custom hook for loading GLTF models with Draco compression
+function useGLTFWithDraco(url) {
+  const [model, setModel] = useState(null);
+  const [animations, setAnimations] = useState([]);
+
+  useEffect(() => {
+    gltfLoader.load(
+      url,
+      (gltf) => {
+        setModel(gltf.scene);
+        setAnimations(gltf.animations);
+      },
+      undefined,
+      (error) => {
+        console.error("Error loading model:", error);
+      }
+    );
+  }, [url]);
+
+  return { scene: model, animations };
+}
+
 function Model({ url, position, rotation, scale }) {
-  const { scene, animations } = useGLTF(url);
+  const { scene, animations } = useGLTFWithDraco(url);
   const { actions, names } = useAnimations(animations, scene);
   const [windowWidth, setWindowWidth] = useState(1200); // Default value
 
@@ -24,7 +59,13 @@ function Model({ url, position, rotation, scale }) {
     };
 
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      // Cleanup Draco loader
+      if (dracoLoader) {
+        dracoLoader.dispose();
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -40,9 +81,11 @@ function Model({ url, position, rotation, scale }) {
   let finalPosition = position;
 
   if (windowWidth <= 768) {
-    finalScale = [1.9, 1.9, 1.9];
+    finalScale = [1.7, 1.7, 1.7];
     finalPosition = [position[0], position[1] - 0.1, position[2] + 0.5];
   }
+
+  if (!scene) return null;
 
   return (
     <primitive
@@ -159,7 +202,7 @@ export default function ComingSoon() {
             <ambientLight intensity={0.8} />
             <pointLight position={[10, 10, 10]} intensity={1} />
             <Model
-              url="/models/model3.glb"
+              url="/models/model03.glb"
               position={[0, -1.6, 0]}
               rotation={[0, -1.5707963267948966, 0]}
               scale={[1.5, 1.5, 1.5]}

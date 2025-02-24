@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { motion } from "framer-motion";
 import {
@@ -8,56 +8,77 @@ import {
   OrbitControls,
   Environment,
   PerspectiveCamera,
-  AdaptiveDpr,
-  BakeShadows,
-  AdaptiveEvents,
-  PerformanceMonitor,
 } from "@react-three/drei";
 import "../app/styles/Model.css";
 import Navbar from "./Navbar";
 import ComingSoon from "./coming";
 import TeamSection from "./team";
 import Footer from "./footer";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
-function Model({ url, position, rotation, scale }) {
-  const { scene, animations } = useGLTF(url, true); // Enable DRACO compression
-  const { actions, names } = useAnimations(animations, scene);
-  const [windowWidth, setWindowWidth] = useState(1200);
+// Configure Draco loader
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath(
+  "https://www.gstatic.com/draco/versioned/decoders/1.5.6/"
+);
+dracoLoader.setDecoderConfig({ type: "js" });
+
+// Configure GLTF loader with Draco
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+
+// Custom hook for loading GLTF models with Draco compression
+function useGLTFWithDraco(url) {
+  const [model, setModel] = useState(null);
+  const [animations, setAnimations] = useState([]);
 
   useEffect(() => {
-    // Optimize scene
-    scene.traverse((child) => {
-      if (child.isMesh) {
-        child.frustumCulled = true;
-        child.castShadow = false;
-        child.receiveShadow = false;
-
-        if (child.material) {
-          child.material.precision = windowWidth <= 768 ? "lowp" : "highp";
-          if (child.material.map) {
-            child.material.map.anisotropy = 1;
-          }
-        }
+    gltfLoader.load(
+      url,
+      (gltf) => {
+        setModel(gltf.scene);
+        setAnimations(gltf.animations);
+      },
+      undefined,
+      (error) => {
+        console.error("Error loading model:", error);
       }
-    });
+    );
 
-    // Debounced resize handler
-    const handleResize = debounce(() => {
+    return () => {
+      // Cleanup when component unmounts
+      if (dracoLoader) {
+        dracoLoader.dispose();
+      }
+    };
+  }, [url]);
+
+  return { scene: model, animations };
+}
+
+function Model({ url, position, rotation, scale }) {
+  const { scene, animations } = useGLTFWithDraco(url);
+  const { actions, names } = useAnimations(animations, scene);
+  const [windowWidth, setWindowWidth] = useState(1200); // Default value
+
+  useEffect(() => {
+    // Update window width after component mounts
+    setWindowWidth(window.innerWidth);
+
+    const handleResize = () => {
       setWindowWidth(window.innerWidth);
-    }, 250);
+    };
 
     window.addEventListener("resize", handleResize);
-    handleResize(); // Initial call
-
     return () => window.removeEventListener("resize", handleResize);
-  }, [scene, windowWidth]);
+  }, []);
 
   useEffect(() => {
     if (names.length > 0) {
       const action = actions[names[0]];
       if (action) {
         action.reset().play();
-        action.setEffectiveTimeScale(0.8);
       }
     }
   }, [actions, names]);
@@ -66,68 +87,27 @@ function Model({ url, position, rotation, scale }) {
   let finalPosition = position;
 
   if (windowWidth <= 768) {
-    if (url.includes("model1.glb")) {
+    if (url.includes("model01.glb")) {
       finalScale = scale * 0.8;
       finalPosition = [position[0] - 0.5, position[1] + 0.2, position[2] + 0.3];
-    } else if (url.includes("model2.glb")) {
-      finalScale = scale * 1.5;
-      finalPosition = [position[0], position[1] - 1.9, position[2] - 1];
+    } else if (url.includes("model02.glb")) {
+      finalScale = scale * 1.2;
+      finalPosition = [position[0], position[1] - 1.5, position[2] - 1];
     }
   }
 
-  return (
-    <primitive
-      object={scene}
-      position={finalPosition}
-      rotation={rotation}
-      scale={finalScale}
-    />
-  );
-}
-
-// Optimized Canvas component
-function OptimizedCanvas({ children, cameraProps, preset = "lobby" }) {
-  const [dpr, setDpr] = useState(1);
+  if (!scene) return null;
 
   return (
-    <Canvas
-      shadows={false}
-      dpr={dpr}
-      gl={{
-        antialias: false,
-        alpha: true,
-        powerPreference: "high-performance",
-        precision: "lowp",
-      }}
-      camera={cameraProps}
-    >
-      <Suspense fallback={null}>
-        <PerformanceMonitor
-          onIncline={() => setDpr(2)}
-          onDecline={() => setDpr(1)}
-        >
-          {children}
-        </PerformanceMonitor>
-        <Environment preset={preset} />
-        <AdaptiveDpr pixelated />
-        <BakeShadows />
-        <AdaptiveEvents />
-      </Suspense>
-    </Canvas>
+    <group>
+      <primitive
+        object={scene}
+        position={finalPosition}
+        rotation={rotation}
+        scale={finalScale}
+      />
+    </group>
   );
-}
-
-// Utility function
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
 }
 
 export default function Scene() {
@@ -138,7 +118,7 @@ export default function Scene() {
   }, []);
 
   if (!isMounted) {
-    return null;
+    return null; // Return null on server-side
   }
 
   return (
@@ -164,15 +144,21 @@ export default function Scene() {
           </div>
         </div>
         <div className="canvas-wrapper">
-          <OptimizedCanvas cameraProps={{ position: [0, 0, 5], fov: 45 }}>
-            <ambientLight intensity={0.6} />
-            <pointLight position={[10, 10, 10]} intensity={0.8} />
+          <Canvas
+            shadows
+            camera={{ position: [0, 0, 5], fov: 45 }}
+            className="canvas"
+            gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
+          >
+            <ambientLight intensity={0.8} />
+            <pointLight position={[10, 10, 10]} intensity={1} />
             <Model
-              url="/models/model1.glb"
+              url="/models/model01.glb"
               position={[0, -1, 0]}
               rotation={[0, -1.5707963267948966, 0]}
               scale={0.96}
             />
+            <Environment preset="lobby" />
             <OrbitControls
               enableZoom={false}
               enablePan={false}
@@ -180,7 +166,7 @@ export default function Scene() {
               minPolarAngle={Math.PI / 2}
               maxPolarAngle={Math.PI / 2}
             />
-          </OptimizedCanvas>
+          </Canvas>
         </div>
         <img
           src="/models/chair2.png"
@@ -192,8 +178,25 @@ export default function Scene() {
       <section className="second-section" id="features">
         <h2 className="section-title">Discover Our Features</h2>
 
-        <div className="content-wrapper columns-layout">
-          <div className="column">
+        <div
+          className="content-wrapper columns-layout"
+          style={{
+            gap:
+              typeof window !== "undefined" && window.innerWidth > 768
+                ? "4rem"
+                : "2rem",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            className="column"
+            style={{
+              gap: window.innerWidth > 768 ? "4rem" : "2rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
             <motion.div
               className="feature-box top-left"
               initial={{ opacity: 0, y: -50 }}
@@ -214,7 +217,7 @@ export default function Scene() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 1 }}
             >
-              <h3>Immersive Environments</h3>
+              <h3>Immersive Environments </h3>
               <p>
                 Step into a hyper-realistic 3D fashion world with Fit-On. Our
                 advanced augmented reality (AR) and 3D modeling technology
@@ -224,19 +227,36 @@ export default function Scene() {
             </motion.div>
           </div>
 
-          <div className="model-container">
-            <OptimizedCanvas
-              cameraProps={{ position: [0, 0, 8], fov: 50 }}
-              preset="studio"
+          <div
+            className="model-container"
+            style={{ margin: window.innerWidth > 768 ? "0 4rem" : "0 2rem" }}
+          >
+            <Canvas
+              shadows
+              gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}
+              dpr={[1, 2]}
             >
-              <ambientLight intensity={0.6} />
-              <pointLight position={[10, 10, 10]} intensity={0.8} />
+              <PerspectiveCamera
+                makeDefault
+                position={[0, 0, 8]}
+                fov={50}
+                near={0.1}
+                far={1000}
+              />
+              <ambientLight intensity={0.8} />
+              <pointLight position={[10, 10, 10]} intensity={1} />
+              <directionalLight
+                position={[0, 5, 5]}
+                intensity={0.5}
+                castShadow
+              />
               <Model
-                url="/models/model2.glb"
+                url="/models/model02.glb"
                 position={[0, -2, 0]}
                 rotation={[0, -1.57, 0]}
                 scale={3}
               />
+              <Environment preset="studio" />
               <OrbitControls
                 enableZoom={false}
                 enablePan={false}
@@ -244,10 +264,18 @@ export default function Scene() {
                 minPolarAngle={Math.PI / 2}
                 maxPolarAngle={Math.PI / 2}
               />
-            </OptimizedCanvas>
+            </Canvas>
           </div>
 
-          <div className="column">
+          <div
+            className="column"
+            style={{
+              gap: window.innerWidth > 768 ? "4rem" : "2rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
             <motion.div
               className="feature-box top-right"
               initial={{ opacity: 0, y: -50 }}
