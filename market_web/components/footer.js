@@ -10,13 +10,13 @@ const Footer = () => {
           <div className="footer-section">
             <h4>Contact Us</h4>
             <div className="contact-links">
-              <a href="mailto:info@example.com">
+              <a href="mailto:info@myfiton.com">
                 <i className="far fa-envelope"></i>
                 info@myfiton.com
               </a>
-              <a href="tel:+94">
+              <a href="tel:+94770676525">
                 <i className="fas fa-phone"></i>
-                +94 (71) 00000
+                +94 (077) 0676525
               </a>
             </div>
           </div>
