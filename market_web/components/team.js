@@ -17,7 +17,7 @@ const TeamSection = () => {
     },
     {
       name: "Nethini Perera",
-      role: "Backend Developer",
+      role: "Full-Stack Developer",
       image: "/models/nethini.jpeg",
     },
     {
@@ -27,12 +27,12 @@ const TeamSection = () => {
     },
     {
       name: "Pasan Hewawasam",
-      role: "Backend Developer",
+      role: "Full-Stack Developer",
       image: "/models/pasan.jpeg",
     },
     {
       name: "Vishnu Priyan",
-      role: "Backend Developer",
+      role: "Full-Stack Developer",
       image: "/models/profile.png",
     },
   ];
