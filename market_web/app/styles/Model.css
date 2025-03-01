@@ -46,8 +46,8 @@ body {
 
 .overlay-image {
   position: absolute;
-  bottom: 150px;
-  right: 400px;
+  bottom: 17%;
+  right: 24%;
   width: min(250px, 25vw);
   height: auto;
   z-index: 2;
@@ -137,89 +137,7 @@ body {
   outline: none;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 1200px) {
-  .columns-layout {
-    gap: 2rem !important;
-  }
-  .column {
-    gap: 2rem !important;
-  }
-  .overlay-image {
-    position: absolute;
-    bottom: 14%;
-    right: 15%;
-    width: 150px;
-    height: auto;
-    z-index: 2;
-  }
-  .content-wrapper {
-    flex-direction: column;
-    align-items: center;
-    gap: 3rem;
-  }
-
-  .column {
-    gap: 3rem;
-  }
-
-  .model-container {
-    order: -1;
-    margin: 2rem 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .second-section {
-    padding: 3rem 1rem;
-  }
-
-  .content-wrapper {
-    flex-direction: column;
-    gap: 2rem;
-  }
-
-  .column {
-    gap: 2rem;
-  }
-
-  .model-container {
-    height: 400px !important;
-    margin: 1rem 0;
-  }
-
-  .model-container {
-    height: 400px !important; /* Override all inherited heights */
-    min-height: 400px !important;
-    max-height: 400px !important;
-  }
-
-  .model-container div {
-    height: 400px !important;
-  }
-
-  .model-container canvas {
-    height: 400px !important; /* Force the canvas inside to obey this */
-  }
-  .cs-model-section {
-    height: 500px !important; /* Ensure it's 400px */
-    min-height: 500px !important;
-    max-height: 500px !important;
-    width: 100% !important;
-    overflow: hidden;
-  }
-
-  .cs-model-section div {
-    height: 500px !important;
-  }
-
-  .cs-model-section canvas {
-    height: 500px !important;
-  }
-  .feature-box {
-    padding: 1.5rem;
-  }
-}
+/* Navbar Styles */
 .navbar {
   position: fixed;
   top: 20px;
@@ -395,47 +313,9 @@ body {
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .navbar {
-    padding: 1rem 2rem;
-  }
-
-  .nav-left,
-  .nav-right {
-    gap: 2rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .nav-left,
-  .nav-right {
-    display: none;
-  }
-
-  .menu-toggle {
-    display: block;
-  }
-
-  .logo-container {
-    position: relative;
-    top: 0;
-    transform: translateX(-50%);
-  }
-
-  .logo-circle {
-    width: 60px;
-    height: 60px;
-  }
-
-  .nav-logo {
-    width: 45px;
-    height: 45px;
-  }
-}
 /* ComingSoonSection css */
 .cs-container {
-  min-height: 110vh; /* Increased height to ensure full visibility */
+  min-height: 110vh;
   background: linear-gradient(135deg, #f3f4ff 0%, #e5e7ff 100%);
   position: relative;
   overflow: hidden;
@@ -457,7 +337,7 @@ body {
 .cs-content-wrapper {
   width: 100%;
   max-width: 1400px;
-  min-height: 1000px; /* Increased min-height to prevent clipping */
+  min-height: 1000px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -549,93 +429,19 @@ body {
 /* 3D Model Section */
 .cs-model-section {
   flex: 1;
-  height: 1000px; /* Increased height */
+  height: 1000px;
   position: relative;
-  z-index: 10; /* Bring the model in front */
-  overflow: visible; /* Ensure model is fully visible */
+  z-index: 10;
+  overflow: visible;
 }
 
 .cs-model-section canvas {
   width: 100% !important;
   height: 100% !important;
   position: relative;
-  z-index: 15; /* Ensures 3D model is in front */
+  z-index: 15;
 }
 
-/* Responsive Styles */
-@media (max-width: 1024px) {
-  .cs-content-wrapper {
-    gap: 20px;
-  }
-
-  .cs-timer-section {
-    padding-right: 20px;
-  }
-
-  .cs-countdown-item {
-    min-width: 80px;
-    padding: 15px;
-  }
-
-  .cs-countdown-value {
-    font-size: 30px;
-  }
-
-  .cs-model-section {
-    height: 800px; /* Adjust height for tablets */
-  }
-}
-
-@media (max-width: 768px) {
-  .cs-container {
-    padding: 20px 10px;
-  }
-
-  .cs-content-wrapper {
-    flex-direction: column;
-    min-height: auto;
-    gap: 20px;
-  }
-
-  .cs-timer-section {
-    padding-right: 0;
-    text-align: center;
-  }
-
-  .cs-timer-section h1 {
-    font-size: 36px;
-    margin-bottom: 30px;
-  }
-
-  .cs-countdown-wrapper {
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 30px;
-  }
-
-  .cs-countdown-item {
-    min-width: 60px;
-    padding: 10px;
-  }
-
-  .cs-countdown-value {
-    font-size: 24px;
-  }
-
-  .cs-platform-buttons {
-    justify-content: center;
-  }
-
-  .cs-model-section {
-    height: 600px; /* Increased height for mobile */
-    width: 100%;
-    z-index: 20; /* Ensure it stays in front */
-  }
-
-  .cs-background-text {
-    font-size: 40vw;
-  }
-}
 .cs-description {
   font-size: 18px;
   color: #555;
@@ -654,15 +460,7 @@ body {
   vertical-align: middle;
 }
 
-@media (max-width: 768px) {
-  .cs-timer-section {
-    margin-bottom: 40px; /* Add space between countdown and model */
-  }
-
-  .cs-model-section {
-    margin-top: 20px; /* Additional margin for better spacing */
-  }
-}
+/* Hero Section */
 .hero-content {
   position: absolute;
   top: 25%;
@@ -720,7 +518,193 @@ body {
   border: 2px solid white;
 }
 
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+  .columns-layout {
+    gap: 2rem !important;
+  }
+
+  .column {
+    gap: 2rem !important;
+  }
+
+  .overlay-image {
+    position: absolute;
+    bottom: 14%;
+    right: 15%;
+    width: 150px;
+    height: auto;
+    z-index: 2;
+  }
+
+  .content-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+  }
+
+  .column {
+    gap: 3rem;
+  }
+
+  .model-container {
+    order: -1;
+    margin: 2rem 0;
+  }
+}
+
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 1rem 2rem;
+  }
+
+  .nav-left,
+  .nav-right {
+    gap: 2rem;
+  }
+
+  .cs-content-wrapper {
+    gap: 20px;
+  }
+
+  .cs-timer-section {
+    padding-right: 20px;
+  }
+
+  .cs-countdown-item {
+    min-width: 80px;
+    padding: 15px;
+  }
+
+  .cs-countdown-value {
+    font-size: 30px;
+  }
+
+  .cs-model-section {
+    height: 800px;
+  }
+}
+
 @media (max-width: 768px) {
+  .second-section {
+    padding: 3rem 1rem;
+  }
+
+  .content-wrapper {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .column {
+    gap: 2rem;
+  }
+
+  .model-container {
+    height: 400px !important;
+    min-height: 400px !important;
+    max-height: 400px !important;
+    margin: 1rem 0;
+  }
+
+  .model-container div {
+    height: 400px !important;
+  }
+
+  .model-container canvas {
+    height: 400px !important;
+  }
+
+  .feature-box {
+    padding: 1.5rem;
+  }
+
+  .nav-left,
+  .nav-right {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .logo-container {
+    position: relative;
+    top: 0;
+    transform: translateX(-50%);
+  }
+
+  .logo-circle {
+    width: 60px;
+    height: 60px;
+  }
+
+  .nav-logo {
+    width: 45px;
+    height: 45px;
+  }
+
+  .cs-container {
+    padding: 20px 10px;
+  }
+
+  .cs-content-wrapper {
+    flex-direction: column;
+    min-height: auto;
+    gap: 20px;
+  }
+
+  .cs-timer-section {
+    padding-right: 0;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .cs-timer-section h1 {
+    font-size: 36px;
+    margin-bottom: 30px;
+  }
+
+  .cs-countdown-wrapper {
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 30px;
+  }
+
+  .cs-countdown-item {
+    min-width: 60px;
+    padding: 10px;
+  }
+
+  .cs-countdown-value {
+    font-size: 24px;
+  }
+
+  .cs-platform-buttons {
+    justify-content: center;
+  }
+
+  .cs-model-section {
+    height: 500px !important;
+    min-height: 500px !important;
+    max-height: 500px !important;
+    width: 100% !important;
+    overflow: hidden;
+    margin-top: 20px;
+    z-index: 20;
+  }
+
+  .cs-model-section div {
+    height: 500px !important;
+  }
+
+  .cs-model-section canvas {
+    height: 500px !important;
+  }
+
+  .cs-background-text {
+    font-size: 40vw;
+  }
+
   .hero-content {
     top: 15%;
     left: 5%;

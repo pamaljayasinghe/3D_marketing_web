@@ -33,7 +33,7 @@ const TeamSection = () => {
     {
       name: "Vishnu Priyan",
       role: "Full-Stack Developer",
-      image: "/models/profile.png",
+      image: "/models/vishnu.png",
     },
   ];
 
